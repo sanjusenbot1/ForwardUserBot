@@ -92,7 +92,7 @@ async def f_handler(_, m):
         fwd_id = m.chat.id
     except:
         traceback.print_exc()
-        return await m.edit('.f fwd_chat_id start end')
+        return await m.edit('.f from_chat_id start end')
 
     ok = await m.edit("forwarding...\n\nVisit the hosted URL for progress.")
 
