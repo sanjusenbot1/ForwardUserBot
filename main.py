@@ -52,7 +52,7 @@ async def caption_handler(_, m):
     global caption
     spl = m.text.split()
     if len(spl) > 1:
-        caption = " ".join(spl[2:])
+        caption = " ".join(spl[1:])
     else:
         if caption:
             return await m.edit(f"Caption was set to '{caption}'")
