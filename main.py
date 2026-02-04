@@ -16,27 +16,75 @@ task = None
 s, f = 0, 0
 caption = ''
 
+not_allowed = []
 
 async def forward(chat_id: int, fwd_id: int, st: int, en: int):
     global s, f
+
     c = st
     while c <= en:
         try:
-            await app.copy_message(fwd_id, chat_id, c, caption=caption)
-            await asyncio.sleep(0.5)
-            s += 1
-            c += 1
+            batch_end = min(c + 199, en)
+            msgs = await app.get_messages(chat_id, list(range(c, batch_end + 1)))
+            if not isinstance(msgs, list):
+                msgs = [msgs]
+            for msg in msgs:
+                if not msg:
+                    c += 1
+                    continue
+                if msg.text and 'text' in not_allowed:
+                    continue
+                elif msg.photo and 'photo' in not_allowed:
+                    continue
+                elif msg.video and 'video' in not_allowed:
+                    continue
+                elif msg.animation and 'gif' in not_allowed:
+                    continue
+                elif msg.audio and 'audio' in not_allowed:
+                    continue
+                elif msg.voice and 'voice' in not_allowed:
+                    continue
+                elif msg.document and 'file' in not_allowed:
+                    continue
+                await msg.copy(fwd_id, caption=caption)
+                s += 1
+                c += 1
+                await asyncio.sleep(0.25)
+
         except FloodWait as e:
-            if isinstance(e.value, int):
-                t = e.value
-            else:
-                t = 30
+            t = e.value if isinstance(e.value, int) else 30
             await asyncio.sleep(t)
             logs.append(f"Sleeping for {t}s.")
-        except Exception as e:
+
+        except Exception:
             logs.append(traceback.format_exc())
             f += 1
+            c += 1
+
+
+@app.on_message(filters.command("a", '.') & filters.me)
+async def allow_handler(_, m):
+    types_ = ['text', 'photo', 'video', 'gif', 'audio', 'voice', 'file']
+    txt = ''
+    for type_ in types_:
+        if type_ in not_allowed:
+            txt += f'`.{type_}` ❌'
+        else:
+            txt += f'`.{type_}` ✅'
+    await m.edit(txt)
     
+
+@app.on_message(filters.command(['text', 'photo', 'video', 'gif', 'audio', 'voice', 'file'], '.') & filters.me)
+async def uf_handler(_, m):
+    type_ = m.text.split()[0][1:]
+    if type_ in not_allowed:
+        not_allowed.remove(type_)
+        txt = f'Enabled {type_} ✅'
+    else:
+        not_allowed.append(type_)
+        txt = f'Disabled {type_} ❌'
+    await m.edit(txt)
+
 
 @app.on_message(filters.command("id", '.') & filters.me)
 async def id_handler(_, m):
