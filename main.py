@@ -68,9 +68,9 @@ async def allow_handler(_, m):
     txt = ''
     for type_ in types_:
         if type_ in not_allowed:
-            txt += f'`.{type_}` ❌'
+            txt += f'`.{type_}` ❌\n'
         else:
-            txt += f'`.{type_}` ✅'
+            txt += f'`.{type_}` ✅\n'
     await m.edit(txt)
     
 
