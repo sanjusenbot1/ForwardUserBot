@@ -29,7 +29,6 @@ async def forward(chat_id: int, fwd_id: int, st: int, en: int):
             if not isinstance(msgs, list):
                 msgs = [msgs]
             for msg in msgs:
-                c += 1
                 if not msg:
                     continue
                 if msg.text and 'text' in not_allowed:
@@ -49,6 +48,7 @@ async def forward(chat_id: int, fwd_id: int, st: int, en: int):
                 await msg.copy(fwd_id, caption=caption)
                 s += 1
                 await asyncio.sleep(0.25)
+            c = batch_end + 1
 
         except FloodWait as e:
             t = e.value if isinstance(e.value, int) else 30
