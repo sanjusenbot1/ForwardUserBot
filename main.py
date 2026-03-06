@@ -29,8 +29,8 @@ async def forward(chat_id: int, fwd_id: int, st: int, en: int):
             if not isinstance(msgs, list):
                 msgs = [msgs]
             for msg in msgs:
+                c += 1
                 if not msg:
-                    c += 1
                     continue
                 if msg.text and 'text' in not_allowed:
                     continue
@@ -48,7 +48,6 @@ async def forward(chat_id: int, fwd_id: int, st: int, en: int):
                     continue
                 await msg.copy(fwd_id, caption=caption)
                 s += 1
-                c += 1
                 await asyncio.sleep(0.25)
 
         except FloodWait as e:
@@ -59,7 +58,6 @@ async def forward(chat_id: int, fwd_id: int, st: int, en: int):
         except Exception:
             logs.append(traceback.format_exc())
             f += 1
-            c += 1
 
 
 @app.on_message(filters.command("a", '.') & filters.me)
