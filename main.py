@@ -47,7 +47,7 @@ async def forward(chat_id: int, fwd_id: int, st: int, en: int):
                     continue
                 await msg.copy(fwd_id, caption=caption)
                 s += 1
-                await asyncio.sleep(12)
+                await asyncio.sleep(5)
             c = batch_end + 1
 
         except FloodWait as e:
